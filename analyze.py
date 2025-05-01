@@ -170,4 +170,52 @@ marital status (%):
             axis.set_ylabel('count')
             axis.tick_params(axis='x', rotation=45)
             FigureCanvasTkAgg(fig, chart_window).get_tk_widget().pack()
+    def plot_dashboard(self):
+        if self.dataset_loaded is None or not self.summary_data:
+            messagebox.showerror("Error","process the data first")
+            return
+
+        dashboard_window = self.create_chart_window("Dashboard")
+        fig = plt.Figure(figsize=(12, 6))
+
+        axis1 = fig.add_subplot(2, 2, 1)
+        self.dataset_loaded['Department'].value_counts().plot.pie(autopct='%1.1f%%', ax=axis1)
+        axis1.set_title("departments")
+        axis1.set_ylabel('')
+
+        axis2 = fig.add_subplot(2, 2, 2)
+        self.dataset_loaded['MaritalStatus'].value_counts().plot.bar(ax=axis2, color='lightgreen')
+        axis2.set_title("marital status")
+        axis2.tick_params(axis='x', rotation=45)
+
+        axis3 = fig.add_subplot(2, 1, 2)
+        axis3.axis('off')
+        s = self.summary_data
+        info_text = f"""
+Total: {s['total']}
+Department Name : {', '.join(s['dept_names'])}
+Average age: {s['age_stats']['avg']}
+Attrition: {s['attrition_yes']}
+Average rate: ${s['rate_stats']['avg']}
+Balance: {s['balance_score']}/4
+"""
+        axis3.text(0, 0.8, info_text.strip(), fontsize=12, verticalalignment='top')
+
+        chart_canvas = FigureCanvasTkAgg(fig, dashboard_window)
+        chart_canvas.draw()
+        chart_canvas.get_tk_widget().pack(fill='both', expand=True)
+
+    def create_chart_window(self, title_text):
+        new_window = tk.Toplevel(self.window_main)
+        new_window.title(title_text)
+        return new_window
+
+    def export_data(self):
+        try:
+            self.dataset_loaded.to_csv("processed_employee_data.csv", index=False)
+            messagebox.showinfo("done", "file exported successfully")
+        except Exception as error:
+            messagebox.showerror("fail", f"couldn’t export:\n{error}")
+
+run = employee_app()
 
