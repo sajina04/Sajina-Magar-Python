@@ -142,3 +142,32 @@ marital status (%):
         summary_text = summary_text + f"\n Work-life balance (avg): {s['balance_score']}/4 \n Gone: {s['attrition_yes']}"
         text_summary.insert('end', summary_text)
         text_summary.config(state='disabled')
+
+        def show_charts(self):
+            if self.dataset_loaded is None:
+                messagebox.showerror("Error", " Load file first")
+                return
+
+            chart_menu = tk.Toplevel(self.window_main)
+            chart_menu.title("charts")
+
+            ttk.Button(chart_menu, text="Pie chart of Department", command=self.plot_dept_chart).pack(fill='x', pady=5)
+            ttk.Button(chart_menu, text="Marriage Bar Graph", command=self.plot_marriage_chart).pack(fill='x', pady=5)
+            ttk.Button(chart_menu, text="Dashboard", command=self.plot_dashboard).pack(fill='x', pady=5)
+
+        def plot_dept_chart(self):
+            chart_window = self.create_chart_window("Department chart")
+            fig, axis = plt.subplots(figsize=(8, 6))
+            self.dataset_loaded['Department'].value_counts().plot.pie(autopct='%1.1f%%', ax=axis)
+            axis.set_ylabel('')
+            FigureCanvasTkAgg(fig, chart_window).get_tk_widget().pack()
+
+        def plot_marriage_chart(self):
+            chart_window = self.create_chart_window("Marital status chart")
+            fig, axis = plt.subplots(figsize=(8, 6))
+            self.dataset_loaded['MaritalStatus'].value_counts().plot.bar(ax=axis, color='skyblue')
+            axis.set_xlabel('status')
+            axis.set_ylabel('count')
+            axis.tick_params(axis='x', rotation=45)
+            FigureCanvasTkAgg(fig, chart_window).get_tk_widget().pack()
+
