@@ -1,5 +1,3 @@
-# Sajina Magar,
-# Student number: 32090360
 import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
@@ -9,7 +7,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 class employee_app:
     def __init__(self):
         self.window_main = tk.Tk()
-        self.window_main.title("Sajina magar , Student ID:32090360")
+        self.window_main.title("Sajina magar , Student ID:3010029")
         self.window_main.geometry("1200x650")
 
         self.dataset_loaded = None
@@ -50,8 +48,6 @@ class employee_app:
         self.button_export = ttk.Button(section_controls, text="Export the data", width=25, command=self.export_data)
         self.button_export.grid(row=4, column=0, pady=10, ipadx=5, ipady=7)
         self.button_export['state'] = 'disabled'
-
-
 
     def load_file(self):
         try:
@@ -143,33 +139,34 @@ marital status (%):
         text_summary.insert('end', summary_text)
         text_summary.config(state='disabled')
 
-        def show_charts(self):
-            if self.dataset_loaded is None:
-                messagebox.showerror("Error", " Load file first")
-                return
+    def show_charts(self):
+        if self.dataset_loaded is None:
+            messagebox.showerror("Error"," Load file first")
+            return
 
-            chart_menu = tk.Toplevel(self.window_main)
-            chart_menu.title("charts")
+        chart_menu = tk.Toplevel(self.window_main)
+        chart_menu.title("charts")
 
-            ttk.Button(chart_menu, text="Pie chart of Department", command=self.plot_dept_chart).pack(fill='x', pady=5)
-            ttk.Button(chart_menu, text="Marriage Bar Graph", command=self.plot_marriage_chart).pack(fill='x', pady=5)
-            ttk.Button(chart_menu, text="Dashboard", command=self.plot_dashboard).pack(fill='x', pady=5)
+        ttk.Button(chart_menu, text="Pie chart of Department", command=self.plot_dept_chart).pack(fill='x', pady=5)
+        ttk.Button(chart_menu, text="Marriage Bar Graph", command=self.plot_marriage_chart).pack(fill='x', pady=5)
+        ttk.Button(chart_menu, text="Dashboard", command=self.plot_dashboard).pack(fill='x', pady=5)
 
-        def plot_dept_chart(self):
-            chart_window = self.create_chart_window("Department chart")
-            fig, axis = plt.subplots(figsize=(8, 6))
-            self.dataset_loaded['Department'].value_counts().plot.pie(autopct='%1.1f%%', ax=axis)
-            axis.set_ylabel('')
-            FigureCanvasTkAgg(fig, chart_window).get_tk_widget().pack()
+    def plot_dept_chart(self):
+        chart_window = self.create_chart_window("Department chart")
+        fig, axis = plt.subplots(figsize=(8, 6))
+        self.dataset_loaded['Department'].value_counts().plot.pie(autopct='%1.1f%%', ax=axis)
+        axis.set_ylabel('')
+        FigureCanvasTkAgg(fig, chart_window).get_tk_widget().pack()
 
-        def plot_marriage_chart(self):
-            chart_window = self.create_chart_window("Marital status chart")
-            fig, axis = plt.subplots(figsize=(8, 6))
-            self.dataset_loaded['MaritalStatus'].value_counts().plot.bar(ax=axis, color='skyblue')
-            axis.set_xlabel('status')
-            axis.set_ylabel('count')
-            axis.tick_params(axis='x', rotation=45)
-            FigureCanvasTkAgg(fig, chart_window).get_tk_widget().pack()
+    def plot_marriage_chart(self):
+        chart_window = self.create_chart_window("Marital status chart")
+        fig, axis = plt.subplots(figsize=(8, 6))
+        self.dataset_loaded['MaritalStatus'].value_counts().plot.bar(ax=axis, color='skyblue')
+        axis.set_xlabel('status')
+        axis.set_ylabel('count')
+        axis.tick_params(axis='x', rotation=45)
+        FigureCanvasTkAgg(fig, chart_window).get_tk_widget().pack()
+
     def plot_dashboard(self):
         if self.dataset_loaded is None or not self.summary_data:
             messagebox.showerror("Error","process the data first")
