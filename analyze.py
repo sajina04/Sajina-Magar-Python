@@ -53,3 +53,92 @@ class employee_app:
 
 
 
+    def load_file(self):
+        try:
+            self.dataset_loaded = pd.read_csv('nurse_attrition (1).csv')
+            messagebox.showinfo("Data","Data loaded successfully")
+            self.button_process['state'] = 'normal'
+        except Exception as error:
+            messagebox.showerror("Error", f"couldn’t load file:\n{error}")
+
+    def process_file(self):
+        if self.dataset_loaded is None:
+            messagebox.showerror("oops", "load the file first")
+            return
+
+        df = self.dataset_loaded
+
+        self.summary_data = {
+            'total': len(df),
+            'dept_names': df['Department'].unique().tolist(),
+            'dept_count': df['Department'].value_counts().to_dict(),
+            'gender_count': df['Gender'].value_counts().to_dict(),
+            'age_stats': {
+                'min': df['Age'].min(),
+                'max': df['Age'].max(),
+                'avg': round(df['Age'].mean(), 1)
+            },
+            'distance_stats': {
+                'min': df['DistanceFromHome'].min(),
+                'max': df['DistanceFromHome'].max(),
+                'avg': round(df['DistanceFromHome'].mean(), 1)
+            },
+            'rate_stats': {
+                'min': df['HourlyRate'].min(),
+                'max': df['HourlyRate'].max(),
+                'avg': round(df['HourlyRate'].mean(), 1)
+            },
+            'marriage_status': df['MaritalStatus'].value_counts(normalize=True).mul(100).round(1).to_dict(),
+            'balance_score': round(df['WorkLifeBalance'].mean(), 1),
+            'attrition_yes': df['Attrition'].value_counts().get('Yes', 0)
+        }
+
+        self.button_visuals['state'] = 'normal'
+        self.button_export['state'] = 'normal'
+        self.show_summary()
+
+    def show_summary(self):
+        window_summary = tk.Toplevel(self.window_main)
+        window_summary.title("summary")
+
+        text_summary = tk.Text(window_summary, wrap='word')
+        text_summary.pack(fill='both', expand=True)
+
+        s = self.summary_data
+        summary_text = f"""summary:
+total employees: {s['total']}
+
+departments: {', '.join(s['dept_names'])}
+department counts:
+"""
+        for dept, count in s['dept_count'].items():
+            summary_text += f"- {dept}: {count}\n"
+
+        summary_text += f"""
+gender:
+- male: {s['gender_count'].get('Male', 0)}
+- female: {s['gender_count'].get('Female', 0)}
+
+age:
+- min: {s['age_stats']['min']}
+- max: {s['age_stats']['max']}
+- avg: {s['age_stats']['avg']}
+
+distance from home:
+- min: {s['distance_stats']['min']}
+- max: {s['distance_stats']['max']}
+- avg: {s['distance_stats']['avg']}
+
+hourly rate:
+- min: {s['rate_stats']['min']}
+- max: {s['rate_stats']['max']}
+- avg: {s['rate_stats']['avg']}
+
+marital status (%):
+"""
+        for status, percent in s['marriage_status'].items():
+            summary_text = summary_text + f"- {status}: {percent}%\n"
+
+        summary_text = summary_text + f"\n Work-life balance (avg): {s['balance_score']}/4 \n Gone: {s['attrition_yes']}"
+        text_summary.insert('end', summary_text)
+        text_summary.config(state='disabled')
